@@ -2,20 +2,25 @@ import AWS from 'aws-sdk';
 
 const ses = new AWS.SES({ region: 'eu-west-1' });
 
-async function sendEmail(event, context) {
+async function sendMail(event, context) {
+  const record = event.Records[0];
+  console.log('record processing', record);
+
+  const email = JSON.parse(record.body);
+  const { subject, body, recipient } = email;
   const params = {
     Source: 'sn.itpro@gmail.com',
     Destination: {
-      ToAddresses: ['sn.itpro@gmail.com'],
+      ToAddresses: [recipient],
     },
     Message: {
       Body: {
         Text: {
-          Data: 'Hello from Sébastien',
+          Data: body,
         },
       },
       Subject: {
-        Data: 'Test email',
+        Data: subject,
       },
     },
   };
@@ -29,6 +34,6 @@ async function sendEmail(event, context) {
   }
 };
 
-export const handler = sendEmail;
+export const handler = sendMail;
 
 
